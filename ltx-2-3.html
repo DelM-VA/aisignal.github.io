@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LTX 2.3 — The Open AI Video Engine That Changes Everything | AI Signal</title>
+<meta name="description" content="LTX 2.3 by Lightricks just dropped — 4K video, synchronized audio, runs locally, fully open source. Here's what it is, why it matters, and how to try it today.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0f0f;
+    --ink-2: #3a3a3a;
+    --ink-3: #6b6b6b;
+    --paper: #faf9f6;
+    --paper-2: #f2f0eb;
+    --paper-3: #e8e5de;
+    --accent: #1a4fd6;
+    --accent-light: #edf0fc;
+    --tag-video: #0f4c35;
+    --tag-video-bg: #d6f0e4;
+    --tag-model: #1a4fd6;
+    --tag-model-bg: #dce8ff;
+    --rule: #d8d5ce;
+    --serif: 'Instrument Serif', Georgia, serif;
+    --sans: 'DM Sans', system-ui, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 17px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--paper);
+    border-bottom: 1px solid var(--rule);
+    padding: 0 2rem;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: var(--serif);
+    font-size: 19px;
+    color: var(--ink);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+  .nav-logo span { color: var(--accent); font-style: italic; }
+  .nav-links { display: flex; gap: 1.5rem; }
+  .nav-links a {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--ink-3);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-sub {
+    font-size: 12px;
+    font-weight: 500;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 6px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: opacity 0.15s;
+  }
+  .nav-sub:hover { opacity: 0.8; }
+
+  /* LAYOUT */
+  .container { max-width: 720px; margin: 0 auto; padding: 0 1.5rem; }
+  .wide { max-width: 860px; margin: 0 auto; padding: 0 1.5rem; }
+
+  /* HERO */
+  .article-hero { padding: 4rem 0 2.5rem; }
+  .category-row { display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; }
+  .tag {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+  .tag-video { background: var(--tag-video-bg); color: var(--tag-video); }
+  .tag-model { background: var(--tag-model-bg); color: var(--tag-model); }
+  .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--ink-3); }
+  .meta { font-size: 13px; color: var(--ink-3); }
+
+  .article-title {
+    font-family: var(--serif);
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 1.25rem;
+    max-width: 680px;
+  }
+  .article-title em { font-style: italic; color: var(--accent); }
+
+  .article-deck {
+    font-size: 18px;
+    color: var(--ink-2);
+    line-height: 1.65;
+    max-width: 620px;
+    font-weight: 300;
+    margin-bottom: 2rem;
+  }
+
+  .byline-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1.25rem 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .byline { display: flex; align-items: center; gap: 10px; }
+  .avatar {
+    width: 36px; height: 36px;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+  .byline-name { font-size: 14px; font-weight: 500; color: var(--ink); }
+  .byline-sub { font-size: 12px; color: var(--ink-3); margin-top: 1px; }
+  .read-meta { font-size: 13px; color: var(--ink-3); }
+
+  /* ARTICLE BODY */
+  .article-body { padding: 2.5rem 0 4rem; }
+
+  .article-body p {
+    margin-bottom: 1.4rem;
+    color: var(--ink-2);
+    font-weight: 300;
+  }
+  .article-body p strong { font-weight: 500; color: var(--ink); }
+
+  .article-body h2 {
+    font-family: var(--serif);
+    font-size: 1.7rem;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin: 2.5rem 0 0.9rem;
+  }
+
+  .article-body h3 {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    margin: 1.75rem 0 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* PULL QUOTE */
+  .pull-quote {
+    margin: 2.5rem 0;
+    padding: 1.5rem 2rem;
+    border-left: 3px solid var(--ink);
+    background: var(--paper-2);
+    border-radius: 0 8px 8px 0;
+  }
+  .pull-quote p {
+    font-family: var(--serif);
+    font-size: 1.25rem;
+    line-height: 1.5;
+    color: var(--ink);
+    font-weight: 400;
+    margin: 0;
+    font-style: italic;
+  }
+
+  /* STAT CARDS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin: 2rem 0;
+  }
+  .stat-card {
+    background: var(--paper-2);
+    border: 1px solid var(--paper-3);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+  }
+  .stat-card .val {
+    font-family: var(--serif);
+    font-size: 1.8rem;
+    color: var(--ink);
+    display: block;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-card .lbl { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.04em; }
+
+  /* FEATURE LIST */
+  .feature-list { list-style: none; margin: 1.25rem 0 1.75rem; }
+  .feature-list li {
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 15px;
+    color: var(--ink-2);
+    font-weight: 300;
+  }
+  .feature-list li:first-child { border-top: 1px solid var(--rule); }
+  .feature-list li .label { font-weight: 500; color: var(--ink); min-width: 140px; flex-shrink: 0; font-size: 14px; }
+
+  /* CALLOUT BOX */
+  .callout {
+    background: var(--accent-light);
+    border: 1px solid #c3d0f5;
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 2rem 0;
+    font-size: 14px;
+    color: var(--ink-2);
+    line-height: 1.6;
+  }
+  .callout strong { color: var(--ink); font-weight: 500; }
+
+  /* RESOURCE CARDS */
+  .resource-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 1.5rem 0; }
+  @media(max-width: 560px) { .resource-grid { grid-template-columns: 1fr; } }
+  .resource-card {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    text-decoration: none;
+    display: block;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .resource-card:hover { border-color: var(--accent); background: var(--accent-light); }
+  .resource-card .rc-tag { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-3); margin-bottom: 6px; }
+  .resource-card .rc-title { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 3px; }
+  .resource-card .rc-desc { font-size: 12px; color: var(--ink-3); line-height: 1.4; }
+
+  /* DIVIDER */
+  .section-rule {
+    width: 48px;
+    height: 2px;
+    background: var(--ink);
+    margin: 2.5rem 0;
+    border: none;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 2.5rem 0;
+    margin-top: 4rem;
+  }
+  .footer-inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+  .footer-logo {
+    font-family: var(--serif);
+    font-size: 17px;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .footer-logo span { font-style: italic; color: var(--accent); }
+  .footer-copy { font-size: 12px; color: var(--ink-3); }
+  .footer-links { display: flex; gap: 1rem; }
+  .footer-links a { font-size: 12px; color: var(--ink-3); text-decoration: none; }
+  .footer-links a:hover { color: var(--ink); }
+
+  /* NEWSLETTER STRIP */
+  .newsletter-strip {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 2.5rem;
+    border-radius: 14px;
+    margin: 3rem 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .nl-text h3 {
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    color: var(--paper);
+    margin-bottom: 4px;
+    font-weight: 400;
+  }
+  .nl-text p { font-size: 13px; color: #a0a09a; font-weight: 300; }
+  .nl-form { display: flex; gap: 8px; flex-wrap: wrap; }
+  .nl-input {
+    padding: 9px 14px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    background: #1a1a1a;
+    color: var(--paper);
+    font-family: var(--sans);
+    font-size: 13px;
+    width: 220px;
+    outline: none;
+  }
+  .nl-input::placeholder { color: #555; }
+  .nl-btn {
+    padding: 9px 18px;
+    border-radius: 8px;
+    border: none;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  @media(max-width: 640px) {
+    nav { padding: 0 1rem; }
+    .nav-links { display: none; }
+    .article-hero { padding: 2.5rem 0 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="https://delm-va.github.io/aisignal.github.io/" class="nav-logo">AI<span>/Signal</span></a>
+  <div class="nav-links">
+    <a href="https://delm-va.github.io/aisignal.github.io/#articles">Articles</a>
+    <a href="https://delm-va.github.io/aisignal.github.io/#topics">Topics</a>
+    <a href="https://delm-va.github.io/aisignal.github.io/#about">About</a>
+  </div>
+  <a href="https://delm-va.github.io/aisignal.github.io/#newsletter" class="nav-sub">Subscribe free</a>
+</nav>
+
+<main>
+  <div class="container">
+
+    <header class="article-hero">
+      <div class="category-row">
+        <span class="tag tag-video">New Model Release</span>
+        <div class="dot"></div>
+        <span class="tag tag-model">Open Source</span>
+        <div class="dot"></div>
+        <span class="meta">April 14, 2026 · 8 min read</span>
+      </div>
+
+      <h1 class="article-title">
+        The open AI video model that just <em>changed the game</em> — LTX 2.3 explained
+      </h1>
+
+      <p class="article-deck">
+        Lightricks just released LTX 2.3 — a fully open AI video model that generates 4K video with synchronized audio, runs on your own laptop, and costs nothing if your company earns under $10M. Here's what it means for everyone.
+      </p>
+
+      <div class="byline-row">
+        <div class="byline">
+          <div class="avatar">MM</div>
+          <div>
+            <div class="byline-name">Martin Mwanduka</div>
+            <div class="byline-sub">AI Signal · Weekly AI Intelligence</div>
+          </div>
+        </div>
+        <div class="read-meta">8 min read · April 14, 2026</div>
+      </div>
+    </header>
+
+    <article class="article-body">
+
+      <p>Every few months, something happens in AI that quietly reshapes what's possible. Not a press conference, not a record-breaking benchmark — just a model release that lands on GitHub and HuggingFace, and quietly makes the expensive, proprietary tools around it look unnecessary.</p>
+
+      <p>LTX 2.3 is one of those moments.</p>
+
+      <p>Released in March 2026 by Lightricks, LTX 2.3 is the latest version of their open AI video engine. It generates <strong>4K video with synchronized audio</strong> — from a text prompt, an image, or a sound file. It runs locally on consumer hardware. It's free for most people. And it's fully open source.</p>
+
+      <p>Let's break down what that actually means.</p>
+
+      <hr class="section-rule">
+
+      <h2>First — what even is LTX?</h2>
+
+      <p>LTX is an AI video ecosystem built by Lightricks, an Israeli tech company best known for consumer photo and video apps. But LTX isn't a consumer app — it's an AI engine designed for developers, studios, and creators who want to build serious video workflows.</p>
+
+      <p>Think of it as the engine underneath. You give it instructions — a text description, a starting image, or an audio file — and it generates a video. Not a slideshow, not a Ken Burns pan across a photo. Actual video, with motion, camera movement, and sound.</p>
+
+      <p>LTX 2.3 is the latest version of that engine, and it's the biggest upgrade yet.</p>
+
+      <div class="stats-grid">
+        <div class="stat-card"><span class="val">4K</span><span class="lbl">Max resolution</span></div>
+        <div class="stat-card"><span class="val">50fps</span><span class="lbl">Frame rate</span></div>
+        <div class="stat-card"><span class="val">20s</span><span class="lbl">Max clip length</span></div>
+        <div class="stat-card"><span class="val">9:16</span><span class="lbl">Native portrait</span></div>
+        <div class="stat-card"><span class="val">Free</span><span class="lbl">Under $10M revenue</span></div>
+      </div>
+
+      <hr class="section-rule">
+
+      <h2>What's new in version 2.3?</h2>
+
+      <p>LTX 2 launched in October 2025 and already made waves. Version 2.3, released in March 2026, brings four upgrades that matter in practice — not just on paper.</p>
+
+      <ul class="feature-list">
+        <li><span class="label">Sharper visuals</span> The entire image processing system (called the VAE) was rebuilt from scratch. The result: faces look more realistic, textures hold up at full resolution, and edges stay crisp. If you've ever generated AI video and cringed at the smeared, waxy look — this is the fix.</li>
+        <li><span class="label">Better instruction following</span> A new text connector means when you write "camera slowly zooms in as she turns to face the window at sunset," the model actually does that — instead of generating something loosely related to your prompt and hoping you don't notice.</li>
+        <li><span class="label">Native portrait video</span> For the first time, you can generate true 1080×1920 vertical video. This isn't a crop. The model was trained directly on portrait-orientation footage. That means no weird composition artifacts, no off-center subjects — just clean vertical video ready for TikTok, Reels, and YouTube Shorts.</li>
+        <li><span class="label">Cleaner audio</span> The audio generation has been significantly improved. Background noise and silence gaps have been removed from the training data. More importantly, you can now use audio as the input — meaning a voice, a piece of music, or a sound effect can drive the rhythm and motion of the video itself.</li>
+      </ul>
+
+      <div class="pull-quote">
+        <p>"For the first time, an AI video model delivers 4K generation at speed — making it ideal for fast concepting and creative ideation."</p>
+      </div>
+
+      <hr class="section-rule">
+
+      <h2>Why does open source matter here?</h2>
+
+      <p>Most powerful AI video tools — Sora, Veo, Runway — are closed systems. You use them through a website or an API. You can't see the model. You can't modify it. You can't run it locally. And you pay every time you generate something.</p>
+
+      <p>LTX 2.3 is different. The model weights — the actual trained intelligence behind the system — are freely available on HuggingFace. Anyone can download them, run them on their own machine, modify them, and build products with them.</p>
+
+      <p>This matters for three reasons:</p>
+
+      <p><strong>Privacy.</strong> Your footage never leaves your machine. For studios, brands, or anyone generating sensitive content, that's not a small thing.</p>
+
+      <p><strong>Cost.</strong> Once you have the model locally, generation is essentially free. No credits, no subscriptions, no per-second pricing eating into your budget.</p>
+
+      <p><strong>Control.</strong> You can fine-tune the model on your own style. LTX 2.3 ships with a LoRA trainer — meaning you can teach the model to generate video in your specific visual style, with your characters, in your brand aesthetic.</p>
+
+      <div class="callout">
+        <strong>Licensing note:</strong> LTX 2.3 is free for companies with under $10M in annual revenue. Companies above that threshold need a commercial license from Lightricks. Always check current terms at <a href="https://ltx.io" style="color:var(--accent)">ltx.io</a> before commercial deployment.
+      </div>
+
+      <hr class="section-rule">
+
+      <h2>Who is this actually for?</h2>
+
+      <p>The honest answer is: a lot of people. Here's how different groups will use this differently.</p>
+
+      <h3>Content creators</h3>
+      <p>Generate native vertical video from a text prompt. Describe your scene, pick your aspect ratio, and let the model do the work. No camera, no editing suite, no stock footage subscription.</p>
+
+      <h3>Developers and startups</h3>
+      <p>LTX 2.3 ships with an API, a ComfyUI integration, and full model weights. You can build AI video generation directly into your product without managing your own GPU infrastructure — or run it entirely on-premise if you need to.</p>
+
+      <h3>Filmmakers and studios</h3>
+      <p>4K at 50fps with synchronized audio is genuinely production-grade output. The two generation modes — Fast Flow for iteration and Pro Flow for final renders — map cleanly onto a real production workflow.</p>
+
+      <h3>Marketers and agencies</h3>
+      <p>Fast turnaround for client pitches, concept reels, and social content. The LTX Studio platform wraps the same engine in a full creative suite designed for teams who don't want to touch a command line.</p>
+
+      <hr class="section-rule">
+
+      <h2>How to try it right now</h2>
+
+      <p>You don't need to install anything to see what it can do. Here's how to go from zero to generating your first video, in order of effort:</p>
+
+      <div class="resource-grid">
+        <a href="https://ltx.io/model/ltx-2-3" target="_blank" class="resource-card">
+          <div class="rc-tag">Zero setup · Free</div>
+          <div class="rc-title">LTX Playground</div>
+          <div class="rc-desc">Try it in the browser. No account needed to start. Text-to-video and image-to-video.</div>
+        </a>
+        <a href="https://fal.ai/models/fal-ai/ltx-2.3/image-to-video" target="_blank" class="resource-card">
+          <div class="rc-tag">API · From $0.06/s</div>
+          <div class="rc-title">Try via fal.ai</div>
+          <div class="rc-desc">No setup. Image-to-video in the browser. Pay per second of video generated.</div>
+        </a>
+        <a href="https://ltx.io" target="_blank" class="resource-card">
+          <div class="rc-tag">Desktop app · Local</div>
+          <div class="rc-title">LTX Desktop</div>
+          <div class="rc-desc">Full video editor running entirely on your hardware. Open weights, no cloud dependency.</div>
+        </a>
+        <a href="https://huggingface.co/Lightricks/LTX-2" target="_blank" class="resource-card">
+          <div class="rc-tag">Open source · HuggingFace</div>
+          <div class="rc-title">Download the weights</div>
+          <div class="rc-desc">Base checkpoint, fp8 quantized variant, and distilled model. Full control.</div>
+        </a>
+        <a href="https://github.com/Lightricks/LTX-2" target="_blank" class="resource-card">
+          <div class="rc-tag">Developers · GitHub</div>
+          <div class="rc-title">LTX-2 Repository</div>
+          <div class="rc-desc">Full code, ComfyUI nodes, LoRA trainer, and reference workflows.</div>
+        </a>
+        <a href="https://en.wikipedia.org/wiki/LTX-2" target="_blank" class="resource-card">
+          <div class="rc-tag">Background · Wikipedia</div>
+          <div class="rc-title">LTX-2 on Wikipedia</div>
+          <div class="rc-desc">History of the model family, architecture overview, and press coverage.</div>
+        </a>
+      </div>
+
+      <hr class="section-rule">
+
+      <h2>The bigger picture</h2>
+
+      <p>For the past two years, the narrative around AI video has been dominated by OpenAI's Sora and Google's Veo. Impressive, yes. But expensive, closed, and out of reach for most people building real things.</p>
+
+      <p>LTX 2.3 is part of a different story — one where open models close the quality gap faster than anyone expected. A year ago, open AI video looked rough compared to the commercial giants. Today, LTX 2.3 is generating 4K video at 50fps with synchronized audio, running locally on consumer hardware, for free.</p>
+
+      <p>The pace of this is not slowing down.</p>
+
+      <p>Whether you're a solo creator, a developer building a product, or a studio evaluating AI tools — LTX 2.3 is worth your attention this week. The gap between "what the big labs have" and "what anyone can use" just got a lot smaller.</p>
+
+      <div class="newsletter-strip">
+        <div class="nl-text">
+          <h3>Get the next story in your inbox</h3>
+          <p>Every Thursday — the AI news that actually matters, in plain English.</p>
+        </div>
+        <div class="nl-form">
+          <input class="nl-input" type="email" placeholder="your@email.com">
+          <button class="nl-btn">Subscribe free →</button>
+        </div>
+      </div>
+
+    </article>
+  </div>
+</main>
+
+<footer>
+  <div class="wide">
+    <div class="footer-inner">
+      <a href="https://delm-va.github.io/aisignal.github.io/" class="footer-logo">AI<span>/Signal</span></a>
+      <div class="footer-links">
+        <a href="https://www.linkedin.com/in/martin-mwanduka" target="_blank">LinkedIn</a>
+        <a href="https://delm-va.github.io/aisignal.github.io/#newsletter">Subscribe</a>
+        <a href="mailto:hello@aisignal.co">Contact</a>
+      </div>
+      <span class="footer-copy">© 2026 AI Signal · All rights reserved</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
