@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Signal — AI News That Actually Matters</title>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #1a1a24;
+      --border: #2a2a3a;
+      --accent: #6366f1;
+      --accent2: #a5b4fc;
+      --text: #e8e8f0;
+      --muted: #8888aa;
+      --tag-bg: #1e1e2e;
+      --green: #22c55e;
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body: 'DM Sans', system-ui, sans-serif;
+    }
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 16px; line-height: 1.6; }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,10,15,0.92); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 60px;
+    }
+    .nav-logo { font-family: var(--font-display); font-size: 1.25rem; font-weight: 900; letter-spacing: -0.5px; }
+    .nav-logo span { color: var(--accent2); }
+    .nav-links { display: flex; gap: 1.5rem; font-size: 0.85rem; font-weight: 500; color: var(--muted); }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta { background: var(--accent); color: #fff; padding: 0.4rem 1rem; border-radius: 6px; font-size: 0.82rem; font-weight: 600; transition: opacity 0.2s; }
+    .nav-cta:hover { opacity: 0.85; }
+
+    /* ── Hero ── */
+    .hero {
+      max-width: 800px; margin: 0 auto; padding: 5rem 2rem 3rem;
+      text-align: center;
+    }
+    .hero h1 { font-family: var(--font-display); font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 900; line-height: 1.15; margin-bottom: 1.2rem; }
+    .hero h1 em { color: var(--accent2); font-style: italic; }
+    .hero p { color: var(--muted); font-size: 1.05rem; margin-bottom: 2rem; }
+    .subscribe-form { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+    .subscribe-form input { padding: 0.65rem 1.1rem; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); font-size: 0.9rem; width: 260px; }
+    .subscribe-form button { background: var(--accent); color: #fff; border: none; padding: 0.65rem 1.4rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+    .subscribe-form button:hover { opacity: 0.85; }
+    .hero-meta { font-size: 0.78rem; color: var(--muted); margin-top: 0.8rem; }
+
+    /* ── Ticker ── */
+    .ticker-wrap { overflow: hidden; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--surface); padding: 0.6rem 0; }
+    .ticker { display: flex; gap: 3rem; animation: ticker 40s linear infinite; white-space: nowrap; }
+    .ticker span { font-size: 0.8rem; color: var(--muted); }
+    .ticker span::before { content: '● '; color: var(--accent); }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* ── Featured ── */
+    .featured { max-width: 1100px; margin: 3rem auto; padding: 0 2rem; }
+    .section-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent2); margin-bottom: 1rem; }
+    .featured-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: center;
+      position: relative; overflow: hidden;
+    }
+    .featured-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+    .featured-tag { display: inline-block; background: var(--tag-bg); color: var(--accent2); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.25rem 0.6rem; border-radius: 4px; margin-bottom: 0.8rem; }
+    .featured-card h2 { font-family: var(--font-display); font-size: clamp(1.4rem, 2.5vw, 2rem); font-weight: 700; line-height: 1.25; margin-bottom: 0.8rem; }
+    .featured-card p { color: var(--muted); font-size: 0.92rem; line-height: 1.65; margin-bottom: 1.2rem; }
+    .read-btn { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--accent); color: #fff; padding: 0.6rem 1.2rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600; transition: opacity 0.2s; }
+    .read-btn:hover { opacity: 0.85; }
+    .featured-visual {
+      background: linear-gradient(135deg, #1e1e3a 0%, #0f0f1e 100%);
+      border-radius: 12px; height: 240px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;
+      border: 1px solid var(--border);
+    }
+    .featured-visual .big-num { font-family: var(--font-display); font-size: 3.5rem; font-weight: 900; color: var(--accent2); }
+    .featured-visual .big-label { font-size: 0.8rem; color: var(--muted); text-align: center; }
+    .featured-visual .stocks { display: flex; gap: 1.2rem; }
+    .stock-chip { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); border-radius: 6px; padding: 0.3rem 0.6rem; font-size: 0.75rem; color: #f87171; font-weight: 600; }
+
+    /* ── Articles Grid ── */
+    .articles-section { max-width: 1100px; margin: 3rem auto; padding: 0 2rem; }
+    .section-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 1.5rem; }
+    .section-header h2 { font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; }
+    .view-all { font-size: 0.82rem; color: var(--accent2); font-weight: 500; }
+    .view-all:hover { text-decoration: underline; }
+    .articles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.2rem; }
+    .article-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 1.5rem; display: flex; flex-direction: column; gap: 0.6rem;
+      transition: border-color 0.2s, transform 0.2s;
+      cursor: pointer;
+    }
+    .article-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .article-num { font-size: 0.72rem; font-weight: 700; color: var(--accent); letter-spacing: 0.05em; }
+    .article-tag { display: inline-block; background: var(--tag-bg); color: var(--muted); font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.18rem 0.5rem; border-radius: 4px; }
+    .article-card h3 { font-family: var(--font-display); font-size: 1rem; font-weight: 700; line-height: 1.3; }
+    .article-card p { font-size: 0.82rem; color: var(--muted); line-height: 1.55; flex: 1; }
+    .article-meta { font-size: 0.72rem; color: var(--muted); margin-top: 0.4rem; }
+
+    /* ── How It Works ── */
+    .how { max-width: 900px; margin: 4rem auto; padding: 0 2rem; text-align: center; }
+    .how h2 { font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; margin-bottom: 2.5rem; }
+    .steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
+    .step { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.8rem; text-align: left; }
+    .step-num { font-size: 0.72rem; font-weight: 700; color: var(--accent2); letter-spacing: 0.1em; margin-bottom: 0.6rem; }
+    .step h3 { font-family: var(--font-display); font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .step p { font-size: 0.82rem; color: var(--muted); line-height: 1.55; }
+
+    /* ── Resources ── */
+    .resources { max-width: 1100px; margin: 3rem auto; padding: 0 2rem; }
+    .resources-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+    .resource-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.4rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .resource-icon { font-size: 1.4rem; }
+    .resource-tag { font-size: 0.68rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .resource-card h4 { font-size: 0.88rem; font-weight: 600; line-height: 1.35; }
+    .resource-dl { font-size: 0.75rem; color: var(--accent2); font-weight: 500; margin-top: auto; }
+
+    /* ── Newsletter Editions ── */
+    .editions { max-width: 1100px; margin: 3rem auto; padding: 0 2rem; }
+    .editions-list { display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1.2rem; }
+    .edition-row { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.5rem; display: flex; align-items: center; gap: 1.5rem; transition: border-color 0.2s; }
+    .edition-row:hover { border-color: var(--accent); }
+    .edition-num { font-size: 0.72rem; font-weight: 700; color: var(--accent); min-width: 2.5rem; }
+    .edition-tag { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); min-width: 80px; }
+    .edition-title { font-size: 0.9rem; font-weight: 500; flex: 1; }
+    .edition-date { font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
+
+    /* ── CTA Banner ── */
+    .cta-banner { max-width: 700px; margin: 4rem auto; padding: 3rem 2rem; text-align: center; }
+    .cta-banner h2 { font-family: var(--font-display); font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 700; margin-bottom: 1rem; }
+    .cta-banner p { color: var(--muted); font-size: 0.92rem; margin-bottom: 2rem; }
+    .cta-meta { font-size: 0.75rem; color: var(--muted); margin-top: 0.8rem; display: flex; justify-content: center; gap: 1.5rem; }
+
+    /* ── Footer ── */
+    footer { border-top: 1px solid var(--border); padding: 2.5rem 2rem; max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 2rem; }
+    .footer-brand p { font-size: 0.82rem; color: var(--muted); margin-top: 0.5rem; max-width: 240px; line-height: 1.55; }
+    footer h5 { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.8rem; }
+    footer ul { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    footer ul li a { font-size: 0.82rem; color: var(--muted); }
+    footer ul li a:hover { color: var(--text); }
+    .footer-bottom { border-top: 1px solid var(--border); padding: 1.2rem 2rem; text-align: center; font-size: 0.75rem; color: var(--muted); }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .featured-card { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: 1fr; }
+      footer { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">AI<span>/</span>Signal</div>
+  <div class="nav-links">
+    <a href="#">Home</a>
+    <a href="#">AI Safety</a>
+    <a href="#">AI Agents</a>
+    <a href="#">Big Tech</a>
+    <a href="#">New Models</a>
+    <a href="#">Tools</a>
+    <a href="#">Resources</a>
+    <a href="#">About</a>
+  </div>
+  <a href="#subscribe" class="nav-cta">Subscribe free</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="subscribe">
+  <p style="font-size:0.78rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.8rem;">Weekly AI Intelligence</p>
+  <h1>AI news that <em>actually</em> matters — explained simply</h1>
+  <p>Join 1,200+ readers in tech, business, and policy getting the most important AI developments — plain English, every Thursday.</p>
+  <div class="subscribe-form">
+    <input type="email" placeholder="Enter your email address" />
+    <button>Get started free</button>
+  </div>
+  <p class="hero-meta">Free forever &nbsp;·&nbsp; No spam &nbsp;·&nbsp; Unsubscribe anytime</p>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span>Claude Mythos — too dangerous to release publicly</span>
+    <span>The $1M business run by AI agents — is 2026 the year?</span>
+    <span>Meta launches Muse Spark AI model</span>
+    <span>LTX 2.3 — AI video generation changes content creation forever</span>
+    <span>AI safety depends on voluntary restraint — for now</span>
+    <span>AI agents set to run full businesses by end of 2026</span>
+    <span>OpenAI is building a smartphone to kill the app — May 2026</span>
+    <span>Meta Muse Spark is live — and the stock jumped 10%</span>
+    <span>$267 billion invested in AI in Q1 2026</span>
+    <span>Anthropic goes all-in on Wall Street with 10 new AI agents</span>
+    <!-- repeat for seamless loop -->
+    <span>Claude Mythos — too dangerous to release publicly</span>
+    <span>The $1M business run by AI agents — is 2026 the year?</span>
+    <span>Meta launches Muse Spark AI model</span>
+    <span>LTX 2.3 — AI video generation changes content creation forever</span>
+    <span>AI safety depends on voluntary restraint — for now</span>
+    <span>AI agents set to run full businesses by end of 2026</span>
+    <span>OpenAI is building a smartphone to kill the app — May 2026</span>
+    <span>Meta Muse Spark is live — and the stock jumped 10%</span>
+    <span>$267 billion invested in AI in Q1 2026</span>
+    <span>Anthropic goes all-in on Wall Street with 10 new AI agents</span>
+  </div>
+</div>
+
+<!-- FEATURED (Article 16 — latest) -->
+<section class="featured">
+  <p class="section-label">AI Latest</p>
+  <div class="featured-card">
+    <div>
+      <span class="featured-tag">Big Tech · May 5, 2026</span>
+      <h2>Anthropic goes all-in on Wall Street — and the market just felt it</h2>
+      <p>10 pre-built AI agents. A brand new model. Microsoft 365 integration. Moody's data. And billions wiped from financial data stocks in hours. Here is what actually happened and why every finance professional needs to pay attention.</p>
+      <a href="#article16" class="read-btn">Read the full story →</a>
+    </div>
+    <div class="featured-visual">
+      <div class="big-num">−8.1%</div>
+      <div class="big-label">FactSet drop after announcement</div>
+      <div class="stocks">
+        <span class="stock-chip">FactSet ↓8.1%</span>
+        <span class="stock-chip">Morningstar ↓</span>
+        <span class="stock-chip">S&P Global ↓</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARTICLES GRID -->
+<section class="articles-section">
+  <div class="section-header">
+    <h2>Latest articles</h2>
+    <a href="#" class="view-all">View all →</a>
+  </div>
+  <div class="articles-grid">
+
+    <div class="article-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="article-num">01</span><span class="article-tag">AI Safety</span>
+      </div>
+      <h3>The AI that's too dangerous to release publicly — Claude Mythos explained</h3>
+      <p>Anthropic built one of the most capable AI models in history — then chose not to give it to the world. Here's the full story and what it means.</p>
+      <div class="article-meta">April 9, 2026 · 10 min read</div>
+    </div>
+
+    <div class="article-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="article-num">02</span><span class="article-tag">AI Agents</span>
+      </div>
+      <h3>The $1M business run entirely by AI agents — is 2026 the year it happens?</h3>
+      <p>Experts say the first fully autonomous AI-operated company could launch before the end of this year. What does that mean for every professional alive today?</p>
+      <div class="article-meta">April 16, 2026 · 12 min read</div>
+    </div>
+
+    <div class="article-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="article-num">03</span><span class="article-tag">AI Agents</span>
+      </div>
+      <h3>LTX 2.3 — the AI video model that changes everything about content creation</h3>
+      <p>Open-source, free to use, and producing video quality that previously cost thousands. Here is what LTX 2.3 means for creators, marketers, and businesses.</p>
+      <div class="article-meta">April 17, 2026 · 9 min read</div>
+    </div>
+
+    <div class="article-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="article-num">04</span><span class="article-tag">Big Tech</span>
+      </div>
+      <h3>Meta's Muse Spark: can Zuckerberg's $14B bet finally challenge OpenAI?</h3>
+      <p>Meta spent $14B, rebuilt from scratch, and launched Muse Spark. The market jumped 10%. Here is what it can do — and what everyone is missing.</p>
+      <div class="article-meta">April 17, 2026 · 11 min read</div>
+    </div>
+
+    <div class="article-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="article-num">05</span><span class="article-tag">New Models</span>
+      </div>
+      <h3>Anthropic just launched Claude Opus 4.7 — here is what actually changed</h3>
+      <p>Better coding. 3x vision. Same price. Claude Opus 4.7 launched April 16 and it is the most capable publicly available AI model Anthropic has ever shipped.</p>
+      <div class="article-meta">April 18, 2026 · 7 min read</div>
+    </div>
+
+    <div class="article-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="article-num">06</span><span class="article-tag">New Models</span>
+      </div>
+      <h3>Claude Opus 4.7 vs GPT-5.4 Pro — which AI should you actually use?</h3>
+      <p>I use both regularly. Here is the honest breakdown of where each one wins, where each one falls short, and the practical guide for non-developers.</p>
+      <div class="article-meta">April 25, 2026 · 8 min read</div>
+    </div>
+
+    <div class="article-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="article-num">07</span><span class="article-tag">New Models</span>
+      </div>
+      <h3>GPT-5.4 just scored above human level on real work tasks — what that actually means</h3>
+      <p>OpenAI's latest model scored 75% on tasks simulating real desktop work — above the human baseline of 72.4%. The era of AI as a digital coworker has begun.</p>
+      <div class="article-meta">April 24, 2026 · 10 min read</div>
+    </div>
+
+    <div class="article-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="article-num">08</span><span class="article-tag">New Models</span>
+      </div>
+      <h3>GPT-5.5 just landed — OpenAI calls it a new class of intelligence</h3>
+      <p>Released today. Six weeks after GPT-5.4. Rolling out to all paid ChatGPT subscribers right now. Here is what changed and why it matters.</p>
+      <div class="article-meta">April 24, 2026 · 8 min read</div>
+    </div>
+
+    <div class="article-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="article-num">09</span><span class="article-tag">AI Safety</span>
+      </div>
+      <h3>AI is already using 10% of US electricity — and a new breakthrough could fix it</h3>
+      <p>AI data centres now consume more power than many cities. Researchers have found a way to cut that energy use by 100 times. Here is why it matters for everyone.</p>
+      <div class="article-meta">April 23, 2026 · 8 min read</div>
+    </div>
+
+    <div class="article-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="article-num">10</span><span class="article-tag">AI Tools</span>
+      </div>
+      <h3>Vibe coding — how to build a real app without writing a single line of code</h3>
+      <p>MIT Technology Review named it a 2026 breakthrough. Tools like Claude Code and Cursor let anyone describe what they want — and the AI builds it. Here is how.</p>
+      <div class="article-meta">April 24, 2026 · 10 min read</div>
+    </div>
+
+    <div class="article-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="article-num">11</span><span class="article-tag">AI Agents</span>
+      </div>
+      <h3>The invisible protocol with 97 million installs — MCP is the backbone of the agentic AI era</h3>
+      <p>Anthropic's Model Context Protocol is now installed on 97 million devices. Every major AI provider ships it. But almost nobody outside tech knows what it is. Until now.</p>
+      <div class="article-meta">April 25, 2026 · 8 min read</div>
+    </div>
+
+    <div class="article-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="article-num">12</span><span class="article-tag">AI Safety</span>
+      </div>
+      <h3>AI safety depends on voluntary restraint — and that is a problem</h3>
+      <p>The frameworks keeping AI safe rely heavily on companies choosing to follow them. Here is why experts are worried — and what binding governance could look like.</p>
+      <div class="article-meta">April 26, 2026 · 9 min read</div>
+    </div>
+
+    <div class="article-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="article-num">13</span><span class="article-tag">AI Agents</span>
+      </div>
+      <h3>AI agents set to run full businesses by end of 2026 — what that means for you</h3>
+      <p>Multiple frontier labs have confirmed agentic systems capable of multi-day, multi-step autonomous work. The business implications are arriving faster than anyone predicted.</p>
+      <div class="article-meta">April 28, 2026 · 11 min read</div>
+    </div>
+
+    <div class="article-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="article-num">14</span><span class="article-tag">Big Tech</span>
+      </div>
+      <h3>Meta Muse Spark is live — and the stock jumped 10%</h3>
+      <p>The numbers are in. Meta's AI model launched to real users and the market rewarded it immediately. Here is what the usage data tells us about the AI race.</p>
+      <div class="article-meta">April 30, 2026 · 7 min read</div>
+    </div>
+
+    <div class="article-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="article-num">15</span><span class="article-tag">Big Tech</span>
+      </div>
+      <h3>OpenAI is building an AI-first smartphone — and it wants to kill the app</h3>
+      <p>No apps. An AI agent that handles everything. Qualcomm, MediaTek, and Luxshare confirmed as partners. Mass production targeted 2028. Here is what we know and why it matters.</p>
+      <div class="article-meta">May 4, 2026 · 10 min read</div>
+    </div>
+
+    <div class="article-card" id="article16" style="border-color: var(--accent);">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="article-num">16</span><span class="article-tag">Big Tech</span>
+      </div>
+      <h3>Anthropic goes all-in on Wall Street — and the market just felt it</h3>
+      <p>Yesterday, a single AI announcement sent financial professionals a warning they can't ignore. 10 agents, a new model, and billions wiped from markets in hours.</p>
+      <div class="article-meta">May 5, 2026 · 8 min read</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how">
+  <p class="section-label" style="margin-bottom:0.5rem;">How it works</p>
+  <h2>From breaking AI news to your inbox in 3 steps</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">Step 01</div>
+      <h3>We track everything</h3>
+      <p>Every major AI development — model releases, safety reports, investments, policy — monitored across dozens of sources every week.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">Step 02</div>
+      <h3>We cut the noise</h3>
+      <p>Out of hundreds of stories, we identify the 3–5 that actually matter to your life and career. No hype. No jargon. No filler.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">Step 03</div>
+      <h3>You get the signal</h3>
+      <p>Every Thursday you receive a clear, readable breakdown with context, implications, and what to watch next — in under 5 minutes.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FREE RESOURCES -->
+<section class="resources">
+  <div class="section-header">
+    <div>
+      <p class="section-label">Free resources</p>
+      <h2 style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;">View all 14 guides →</h2>
+    </div>
+  </div>
+  <div class="resources-grid">
+    <div class="resource-card"><div class="resource-icon">📄</div><div class="resource-tag">AI Safety</div><h4>AI Safety in Plain English — The Claude Mythos Guide</h4><div class="resource-dl">📥 Subscribe to download</div></div>
+    <div class="resource-card"><div class="resource-icon">📄</div><div class="resource-tag">New Models</div><h4>GPT-5.5 Breakdown — A New Class of Intelligence</h4><div class="resource-dl">📥 Subscribe to download</div></div>
+    <div class="resource-card"><div class="resource-icon">📄</div><div class="resource-tag">AI Safety</div><h4>AI Lawyers Guide — The 6 Rules That Protect Every Professional</h4><div class="resource-dl">📥 Subscribe to download</div></div>
+    <div class="resource-card"><div class="resource-icon">📄</div><div class="resource-tag">AI Tools</div><h4>Vibe Coding Starter Guide — Build Apps Without Code</h4><div class="resource-dl">📥 Subscribe to download</div></div>
+    <div class="resource-card"><div class="resource-icon">📄</div><div class="resource-tag">Big Tech</div><h4>Anthropic Wall Street Guide — What the Finance AI Takeover Means for You</h4><div class="resource-dl">📥 Subscribe to download</div></div>
+  </div>
+</section>
+
+<!-- NEWSLETTER EDITIONS -->
+<section class="editions">
+  <div class="section-header">
+    <h2>Latest newsletter editions</h2>
+    <a href="https://aisignalhq.beehiiv.com" class="view-all">Read on Beehiiv →</a>
+  </div>
+  <div class="editions-list">
+    <div class="edition-row"><span class="edition-num">01</span><span class="edition-tag">AI Safety</span><span class="edition-title">The AI that's too dangerous to release publicly</span><span class="edition-date">April 9, 2026 · Edition 01</span></div>
+    <div class="edition-row"><span class="edition-num">02</span><span class="edition-tag">AI Agents</span><span class="edition-title">The $1M business run entirely by AI agents</span><span class="edition-date">April 16, 2026 · Edition 02</span></div>
+    <div class="edition-row"><span class="edition-num">03</span><span class="edition-tag">AI Tools</span><span class="edition-title">LTX 2.3 — the AI video model that changes content creation</span><span class="edition-date">April 17, 2026 · Edition 03</span></div>
+    <div class="edition-row"><span class="edition-num">04</span><span class="edition-tag">Big Tech</span><span class="edition-title">Meta's Muse Spark: can Zuckerberg's $14B bet finally challenge OpenAI?</span><span class="edition-date">April 17, 2026 · Edition 04</span></div>
+    <div class="edition-row"><span class="edition-num">05</span><span class="edition-tag">New Models</span><span class="edition-title">Anthropic just launched Claude Opus 4.7 — here is what actually changed</span><span class="edition-date">April 18, 2026 · Edition 05</span></div>
+    <div class="edition-row"><span class="edition-num">06</span><span class="edition-tag">New Models</span><span class="edition-title">Claude Opus 4.7 vs GPT-5.4 Pro — which AI should you actually use?</span><span class="edition-date">April 21, 2026 · Edition 06</span></div>
+    <div class="edition-row"><span class="edition-num">07</span><span class="edition-tag">AI Safety</span><span class="edition-title">AI is getting lawyers suspended — and it is just the beginning</span><span class="edition-date">April 20, 2026 · Edition 07</span></div>
+    <div class="edition-row"><span class="edition-num">08</span><span class="edition-tag">AI Agents</span><span class="edition-title">Perplexity just reinvented your computer — meet Personal Computer</span><span class="edition-date">April 27, 2026 · Edition 08</span></div>
+    <div class="edition-row"><span class="edition-num">09</span><span class="edition-tag">Big Tech</span><span class="edition-title">OpenAI is building an AI-first smartphone — and it wants to kill the app</span><span class="edition-date">May 4, 2026 · Edition 09</span></div>
+    <div class="edition-row" style="border-color:var(--accent);"><span class="edition-num" style="color:var(--accent2);">10</span><span class="edition-tag">Big Tech</span><span class="edition-title">Anthropic goes all-in on Wall Street — and the market just felt it</span><span class="edition-date">May 5, 2026 · Edition 10</span></div>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<section class="cta-banner">
+  <h2>Stay ahead of the AI curve</h2>
+  <p>Get the free "AI Safety in Plain English" PDF guide instantly when you subscribe — plus weekly analysis every Thursday.</p>
+  <div class="subscribe-form">
+    <input type="email" placeholder="Enter your email address" />
+    <button>Get the free guide + subscribe →</button>
+  </div>
+  <div class="cta-meta">
+    <span>Free forever</span>
+    <span>No spam, ever</span>
+    <span>Unsubscribe anytime</span>
+    <span>PDF guide included</span>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <div class="nav-logo" style="margin-bottom:0.5rem;">AI<span style="color:var(--accent2);">/</span>Signal</div>
+    <p>Weekly AI intelligence for curious professionals. Plain English. No hype. Every Thursday.</p>
+  </div>
+  <div>
+    <h5>Content</h5>
+    <ul>
+      <li><a href="#">AI Safety</a></li>
+      <li><a href="#">AI Agents</a></li>
+      <li><a href="#">Big Tech</a></li>
+      <li><a href="#">New Models</a></li>
+      <li><a href="#">Tools</a></li>
+      <li><a href="#">Resources</a></li>
+    </ul>
+  </div>
+  <div>
+    <h5>Company</h5>
+    <ul>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Subscribe</a></li>
+      <li><a href="https://www.linkedin.com/in/martin-mwanduka">LinkedIn</a></li>
+    </ul>
+  </div>
+  <div>
+    <h5>Newsletter</h5>
+    <ul>
+      <li><a href="https://aisignalhq.beehiiv.com">Read on Beehiiv</a></li>
+      <li><a href="#">Subscribe free</a></li>
+      <li><a href="mailto:talktomwenda@gmail.com">Contact</a></li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">© 2026 AI Signal &nbsp;·&nbsp; <a href="https://aisignalhq.beehiiv.com" style="color:var(--accent2);">Powered by Beehiiv</a></div>
+
+</body>
+</html>
